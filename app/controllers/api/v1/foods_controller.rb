@@ -2,6 +2,10 @@ module Api
   module V1
     class FoodsController < ApplicationController
       def index
+        p "--------------"
+        logger.debug(params)
+        p "--------------"
+
         restaurant = Restaurant.find(params[:restaurant_id])
 
         render json: {

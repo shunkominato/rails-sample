@@ -1,10 +1,14 @@
 module Api
   module V1
-    class LineFoodsController > ApplicationController
+    class LineFoodsController < ApplicationController
       before_action :set_food, only: %i[create replace]
 
       def index
         line_foods = LineFood.active
+        p ")))))))))))))))))))))))))"
+        aa = LineFood.active
+        logger.debug(aa.inspect)
+        p ")))))))))))))))))))))))))"
         if line_foods.exists?
           render json: {
             line_food_ids: line_foods.map { |line_food| line_food.id },
@@ -18,15 +22,23 @@ module Api
       end
 
       def create
-        if LineFood.active.other_restaurant(@ordered_food.other_restaurant.id).exists?
-          return render json :{
-            existng_restaurant: LineFood.other_restaurant(@ordered_food.other_restaurant.id).first.restaurant.name
+        p "111111111111"
+        p "--------------"
+        aa = LineFood.active
+        logger.debug(aa.inspect)
+        p "--------------"
+        if LineFood.active.other_restaurant(@ordered_food.restaurant.id).exists?
+          p "2222222222"
+          return render json: {
+            existng_restaurant: LineFood.other_restaurant(@ordered_food.other_restaurant.id).first.restaurant.name,
             new_restaurant: Food.find(params[:food_id]).restaurant.name,
           }, status: :not_acceptable
         end
 
+        p "33333333"
         set_line_food(@ordered_food)
 
+        p "44444444444"
         if @line_food.save
           render json: {
             line_food: @line_food
@@ -58,11 +70,18 @@ module Api
 
       def set_food
         @ordered_food = Food.find(params[:food_id])
+        p "--------------"
+        logger.debug(@ordered_food.restaurant.inspect)
+        p "--------------"
       end
 
       def set_line_food(ordered_food)
+
         if ordered_food.line_food.present?
           @line_food = ordered_food.line_food
+          p "------@line_food.attributes--------"
+          logger.debug(@line_food.inspect)
+          p "--------------"
           @line_food.attributes = {
             count: ordered_food.line_food.count + params[:count],
             active: true
